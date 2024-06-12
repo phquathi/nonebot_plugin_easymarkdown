@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "nonebot-plugin-easymarkdown"
+version = "1.0.0"
+description = "格式化markdown语法，并转化为可读性较好的图片"
+authors = ["phquathi <yangziqi233@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+markdown2 = "^2.4.2"
+Pillow = "^9.3.0"
+PyMuPDF = "^1.22.3"
+xhtml2pdf = "^0.2.8"
+markdown = "^3.3.7"
+python-markdown-math = "^0.8.0"
+nonebot2 = "^2.0.0"
+nonebot-adapter-onebot = "^2.0.0"
+nonebot-plugin-apscheduler = "^0.4.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

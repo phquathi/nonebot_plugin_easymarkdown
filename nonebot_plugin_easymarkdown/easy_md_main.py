@@ -6,7 +6,7 @@ from nonebot import on_command
 from nonebot.adapters.onebot.v11 import Message, MessageSegment, Bot, Event
 from nonebot.typing import T_State
 from nonebot.params import CommandArg
-from .to_md import markdown_to_html, create_pdf, pdf_to_images
+from .to_md import markdown_to_html, create_pdf, pdf_to_images, insert_manual_line_breaks
 
 md_command = on_command(".md", aliases={"markdown"}, priority=5)
 current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -22,7 +22,8 @@ async def handle_first_receive(bot: Bot, event: Event, state: T_State, args: Mes
     await bot.send(event, "markdown图片生成中...请稍等...（如文本量大则响应时间稍久）")
 
     html = markdown_to_html(md_text)
-    create_pdf(html, pdf_path)
+    co_html = insert_manual_line_breaks(html)  # 新增手动添加换行
+    create_pdf(co_html, pdf_path)
     images = pdf_to_images(pdf_path)
 
     for i, img in enumerate(images):
@@ -44,7 +45,7 @@ async def send_image(bot: Bot, event: Event, img_byte_arr: io.BytesIO):
     await bot.send(event, Message(image_segment))
 
 
-def clean_up():
+def clean_up():  # 发完图片后删除pdf文件与图片
     if os.path.exists(pdf_path):
         os.remove(pdf_path)
     for i in range(100):

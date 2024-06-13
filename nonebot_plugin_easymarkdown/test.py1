@@ -1,0 +1,291 @@
+# from PIL import Image
+# import fitz
+# import markdown2
+# from xhtml2pdf import pisa
+# import os
+# import re
+# from mdx_math import MathExtension
+# from markdown.extensions.codehilite import CodeHiliteExtension
+# from markdown.extensions.toc import TocExtension
+# 
+# 
+# def markdown_to_html(md_text: str) -> str:
+#     html = markdown2.markdown(md_text,
+#                               extras=["fenced-code-blocks", "tables", "strike", "cuddled-lists", "metadata",
+#                                       "task_list",
+#                                       'code-friendly', 'footnotes', 'wiki-tables', CodeHiliteExtension(),
+#                                       TocExtension(),
+#                                       MathExtension(enable_dollar_delimiter=True)])
+# 
+#     html = f"""
+#     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+#     <html xmlns="http://www.w3.org/1999/xhtml">
+#     <head>
+#         <style type="text/css">
+#          @page {{
+#             size: A4 portrait;
+#             size: letter portrait;        
+#             @frame header_frame {{         
+#                 -pdf-frame-content: header_content;
+#                 left: 50pt; width: 512pt; top: 50pt; height: 40pt;
+#             }}
+#             @frame col1_frame {{            
+#                 left: 44pt; width: 512pt; top: 90pt; height: 632pt;
+#             }}
+#             @frame footer_frame {{           
+#                 -pdf-frame-content: footer_content;
+#                 left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+#             }}
+#         }}
+#         body, p{{
+#             font-family: STSong-Light;
+#             font-size: 12pt;
+#             word-wrap: break-word;
+#             white-space: pre-wrap;
+#             overflow-wrap: break-word;
+#         }}
+#         table {{
+#             border-collapse: collapse;
+#             width: 100%;
+#         }}
+#         table, th, td {{
+#             border: 1px solid black;
+#         }}
+#         th, td {{
+#             padding: 8px;
+#             text-align: left;
+#         }}
+#         pre {{
+#             background: #f4f4f4;
+#             padding: 10px;
+#             border: 1px solid #ddd;
+#             overflow: auto;
+#         }}
+#         code {{
+#             font-family: STSong-Light;        
+#             background: #f4f4f4;
+#             padding: 3px;
+#         }}
+#         </style>
+#     </head>
+#     <body>
+#         {html}
+#     </body>
+#     </html>
+#     """
+#     return html
+# 
+# 
+# def create_pdf(html: str, pdf_path: str):
+#     with open(pdf_path, "w+b") as result_file:
+#         pisa_status = pisa.CreatePDF(html, dest=result_file, encoding="utf-8")
+#         if pisa_status.err:
+#             print(f"Error converting HTML to PDF: {pisa_status.err}")
+# 
+# 
+# def pdf_to_images(pdf_path: str):
+#     doc = fitz.open(pdf_path)
+#     images = []
+#     for page_num in range(doc.page_count):
+#         page = doc.load_page(page_num)
+#         pix = page.get_pixmap()
+#         img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+#         images.append(img)
+#     return images
+# 
+# 
+# def insert_manual_line_breaks(html: str) -> str:
+#     chinese_char_pattern = re.compile(r'[\u4e00-\u9fa5]')
+# 
+#     def add_break_tags(text):
+#         new_text = ""
+#         char_count = 0
+#         for char in text:
+#             new_text += char
+#             if chinese_char_pattern.match(char):
+#                 char_count += 1
+#                 if char_count >= 43:
+#                     new_text += '<br>'
+#                     char_count = 0
+#             else:
+#                 char_count += 1 / 2
+#                 if char_count >= 43:
+#                     new_text += '<br>'
+#                     char_count = 0
+#         return new_text
+#     paragraph_pattern = re.compile(r'(<p>.*?</p>)', re.DOTALL)
+#     paragraphs = paragraph_pattern.findall(html)
+# 
+#     for paragraph in paragraphs:
+#         modified_paragraph = add_break_tags(paragraph)
+#         html = html.replace(paragraph, modified_paragraph)
+# 
+#     return html
+# 
+# 
+# md_text = """
+# # Markdown 示例
+# 
+# 这是一个包含所有 Markdown 语法的示例。
+# 
+# ## 标题
+# 
+# # 一级标题
+# ## 二级标题
+# ### 三级标题
+# #### 四级标题
+# ##### 五级标题
+# ###### 六级标题
+# 
+# ## 文本样式
+# 
+# **加粗文本**
+# 
+# *斜体文本*
+# 
+# ***加粗且斜体***
+# 
+# ~~删除线~~
+# 
+# ## 列表
+# 
+# - 无序列表项 1
+# - 无序列表项 2
+#     - 嵌套无序列表项 1
+#     - 嵌套无序列表项 2
+# 
+# 1. 有序列表项 1
+# 2. 有序列表项 2
+#     1. 嵌套有序列表项 1
+#     2. 嵌套有序列表项 2
+# 
+# ## 引用
+# 
+# > 这是一个引用。
+# 
+# ## 链接
+# 
+# [这是一个链接](https://www.example.com)
+# 
+#  1. 数学基础
+# - 线性代数：矩阵运算、特征值与特征向量、奇异值分解等。
+# - 概率与统计：基本概率论、常见分布（如正态分布、伯努利分布）、期望与方差、贝叶斯定理等。
+# - 微积分：导数与偏导数、链式法则、梯度与梯度下降法等。
+# 
+#  2. 编程基础
+# - Python编程：熟练掌握Python语言，包括基本语法、数据结构（如列表、字典）、面向对象编程等。
+# - 科学计算库：Numpy（数值计算）、Pandas（数据处理）、Matplotlib（数据可视化）。
+# 
+#  3. 机器学习基础
+# - 基本概念：监督学习、无监督学习、半监督学习、强化学习。
+# - 常用算法：线性回归、逻辑回归、决策树、支持向量机、KNN、K-means等。
+# - 模型评估：交叉验证、混淆矩阵、精度、召回率、F1-score等。
+# 
+#  4. 深度学习基础
+# - 神经网络基础：感知器、多层感知器（MLP）、激活函数（如ReLU、Sigmoid、Tanh）。
+# - 前向传播与反向传播：理解神经网络的训练过程，包括损失函数和梯度下降优化。
+# - 常用框架：Keras、TensorFlow、PyTorch等。
+# 
+#  5. 实践项目
+# - 简单项目：如手写数字识别（MNIST）、基本图像分类（CIFAR-10）。
+# - 数据预处理与增强：如何处理和增强图像数据、文本数据等。
+# - 模型训练与调优：掌握训练神经网络的基本步骤，并通过调参提高模型性能。
+# 
+#  6. 进阶知识
+# - 卷积神经网络（CNN）：用于图像处理，理解卷积、池化、全连接层。
+# - 循环神经网络（RNN）：用于序列数据处理，理解基本RNN、LSTM、GRU等变种。
+# - 生成对抗网络（GAN）：了解生成模型和对抗训练的基本原理。
+# - 强化学习：基本概念和算法，如Q-learning、深度Q网络（DQN）。
+# 
+#  资源推荐
+# 
+#  在线课程
+# - Coursera：
+#   - Machine Learning by Andrew Ng
+#   - Deep Learning Specialization by Andrew Ng
+# - edX：
+#   - Deep Learning for Self-Driving Cars by MIT
+# - Udacity：
+#   - Deep Learning Nanodegree
+# 
+#  书籍
+# - 《深度学习》（Deep Learning） - Ian Goodfellow, Yoshua Bengio, Aaron Courville
+# - 《神经网络与深度学习》 - Michael Nielsen
+# - 《Python深度学习》 - Francois Chollet
+# 
+#  开源项目和实践
+# - Kaggle：参加竞赛，学习别人的代码和思路。
+# - GitHub：查找和参考开源项目，贡献自己的项目。
+# 
+# 掌握以上这些知识和技能，你将能够打下扎实的深度学习基础，并逐步进入更高级的应用和研究领域。学习深度学习需要时间和实践，通过不断练习和解决实际问题，你会逐渐掌握这门技术。
+# 在漫长的历史长河中，人类文明经历了无数的风风雨雨，从古代的部落到现代的国家，从简单的农业社会到复杂的工业社会，每一次变革都推动着社会向前发展。文明的进步不仅体现在科技的飞跃，还体现在思想的解放和文化的繁荣。古代的哲学家、科学家、艺术家们以他们的智慧和创造力，开辟了一个又一个新时代。现代社会的进步则离不开无数默默奉献的普通人，他们用自己的劳动和智慧，推动着社会的车轮不断向前。每一个时代都有其独特的挑战和机遇，而人类总是能够在困境中寻找出路，不断追求更高的生活质量和精神境界。
+# 
+# 
+#  latex语法示例
+# 
+# 行内公式示例：$E=mc^2$
+# 
+# 块级公式示例：
+# $$
+# \\int_a^b f(x) dx
+# $$
+# ## 链接
+# 
+# [这是一个链接](https://www.example.com)
+# 
+# ## 图片
+# 
+# ![替代文本](https://www.example.com/image.jpg)
+# 
+# ## 表格
+# 
+# | 标题1 | 标题2 | 标题3 |
+# |-------|-------|-------|
+# | 内容1 | 内容2 | 内容3 |
+# | 内容4 | 内容5 | 内容6 |
+# 
+# ## LaTeX
+# 
+# 这是一个 LaTeX 示例：
+# 
+# $$
+# E = mc^2
+# $$
+# 
+# ## 水平线
+# 
+# ---
+# 
+# ## 任务列表
+# 
+# - [x] 已完成项
+# - [ ] 未完成项
+# 
+# ## 代码
+# 
+# `这是行内代码`
+# 
+# ```python
+# # 这是一个代码块
+# def hello_world():
+#     print("Hello, World!")
+# ```
+# 
+# """
+# 
+# current_directory = os.path.dirname(os.path.abspath(__file__))
+# pdf_path = os.path.join(current_directory, 'output.pdf')
+# 
+# html = markdown_to_html(md_text)
+# 
+# co_html = insert_manual_line_breaks(html)
+# 
+# print(co_html)
+# 
+# create_pdf(co_html, pdf_path)
+# 
+# img = pdf_to_images(pdf_path)
+# 
+# for i, img in enumerate(img):
+#     img.save(f"output_page_{i + 1}.png", format='PNG')
+#     print(f"图片已保存为output_page_{i + 1}.png")

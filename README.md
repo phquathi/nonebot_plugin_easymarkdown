@@ -7,7 +7,7 @@
 ![Python 3.8](https://img.shields.io/badge/Python-3.8-blue)
 
 
-基于fitz与xhtml2pdf的格式化markdown语法，并转化为图片发送的插件
+基于`fitz`与`xhtml2pdf`的格式化markdown语法，并转化为图片发送的插件
 
 ## 介绍
 对于大语言模型越来越广泛使用的今天，大部分人在网页复制其回答总是会带有md的正则语法。导致许多时候我们要将其粘贴至word等地方时格式会很乱，并且还要手动去除这些语法，徒增麻烦。
@@ -20,11 +20,15 @@
 
 使用nb-cli进行安装：
 
-``nb plugin install nonebot-plugin-easymarkdown``
+```
+nb plugin install nonebot-plugin-easymarkdown
+```
 
 或使用pip安装：
 
-``pip install nonebot-plugin-easymarkdown``
+```
+pip install nonebot-plugin-easymarkdown
+```
 
 ## 使用
 

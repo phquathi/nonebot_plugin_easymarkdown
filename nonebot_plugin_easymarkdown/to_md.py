@@ -107,11 +107,6 @@ def insert_manual_line_breaks(html: str) -> str:
                 if char_count >= 43:
                     new_text += '<br>'
                     char_count = 0
-            else:
-                char_count += 1 / 2
-                if char_count >= 43:
-                    new_text += '<br>'
-                    char_count = 0
         return new_text
     paragraph_pattern = re.compile(r'(<p>.*?</p>)', re.DOTALL)
     paragraphs = paragraph_pattern.findall(html)

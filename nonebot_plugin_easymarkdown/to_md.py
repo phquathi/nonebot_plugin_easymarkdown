@@ -95,24 +95,40 @@ def pdf_to_images(pdf_path: str):
 
 
 def insert_manual_line_breaks(html: str) -> str:
-    chinese_char_pattern = re.compile(r'[\u4e00-\u9fa5]')
+    line_length = 42
 
-    def add_break_tags(text):
-        new_text = ""
-        char_count = 0
+    def add_breaks(text, line_length):
+        text = text.replace("<br>", "")
+        result = ""
+        current_length = 0
+
         for char in text:
-            new_text += char
-            if chinese_char_pattern.match(char):
-                char_count += 1
-                if char_count >= 43:
-                    new_text += '<br>'
-                    char_count = 0
-        return new_text
-    paragraph_pattern = re.compile(r'(<p>.*?</p>)', re.DOTALL)
-    paragraphs = paragraph_pattern.findall(html)
+            result += char
+            current_length += 1
 
-    for paragraph in paragraphs:
-        modified_paragraph = add_break_tags(paragraph)
-        html = html.replace(paragraph, modified_paragraph)
+            if current_length >= line_length:
+                result += "<br>"
+                current_length = 0
+
+        return result
+
+    def process_tags(tag_pattern, html):
+        matches = tag_pattern.findall(html)
+        for match in matches:
+            inner_content = re.search(r'>(.*?)<', match, re.DOTALL)
+            if inner_content:
+                inner_text = inner_content.group(1)
+                modified_text = add_breaks(inner_text, line_length)
+                html = html.replace(inner_text, modified_text)
+        return html
+
+    paragraph_pattern = re.compile(r'(<p>.*?</p>)', re.DOTALL)
+    html = process_tags(paragraph_pattern, html)
+
+    li_pattern = re.compile(r'(<li>(?!<p>).*?</li>)', re.DOTALL)
+    html = process_tags(li_pattern, html)
+
+    li_with_p_pattern = re.compile(r'(<li><p>.*?</p></li>)', re.DOTALL)
+    html = process_tags(li_with_p_pattern, html)
 
     return html

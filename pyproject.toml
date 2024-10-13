@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot-plugin-easymarkdown"
-version = "1.0.2"
+version = "1.0.3"
 description = "格式化markdown语法，并转化为可读性较好的图片"
 authors = ["phquathi <yangziqi233@gmail.com>"]
 readme = "README.md"
